@@ -1,0 +1,22 @@
+# HDR Image Processing Dependencies
+# ================================
+
+# Core computer vision and image processing
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Visualization and plotting
+matplotlib>=3.7.0
+
+# Optional: For advanced HDR formats
+# openexr-python>=1.3.0  # For EXR file support
+# imageio>=2.31.0        # For additional image format support
+
+# Optional: For machine learning-based HDR (future enhancement)
+# torch>=2.0.0           # PyTorch for deep learning models
+# torchvision>=0.15.0    # Computer vision models
+# scikit-image>=0.21.0   # Advanced image processing algorithms
+
+# Development and testing (optional)
+# pytest>=7.4.0
+# jupyter>=1.0.0         # For interactive development
