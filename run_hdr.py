@@ -12,7 +12,8 @@ import sys
 import cv2
 import numpy as np
 from pathlib import Path
-from hdr_example import HDRProcessor, visualize_results
+from hdr import HDRProcessor
+from utils import visualize_results, save_hdr_image
 
 
 def create_sample_images():
@@ -142,10 +143,9 @@ def run_advanced_hdr(input_path=None, output_dir="hdr_results"):
     cv2.imwrite(str(output_path), results['tone_mapped'])
     print(f"💾 Advanced HDR result saved to: {output_path}")
     
-    # Save HDR image
+    # Save HDR image (with automatic format fallback)
     hdr_path = Path(output_dir) / "advanced_hdr_image.exr"
-    cv2.imwrite(str(hdr_path), results['hdr_image'])
-    print(f"💾 HDR image saved to: {hdr_path}")
+    save_hdr_image(results['hdr_image'], hdr_path)
     
     # Create visualization
     viz_path = Path(output_dir) / "advanced_hdr_visualization.png"

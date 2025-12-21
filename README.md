@@ -1,6 +1,24 @@
 # Mobile Computational Photography: HDR Implementation
 
-This repository demonstrates a complete High Dynamic Range (HDR) image processing pipeline, implementing the core concepts outlined in the mobile computational photography design document.
+This repository demonstrates a complete High Dynamic Range (HDR) image processing pipeline, implementing the core concepts from **Chapter 13 of "Mobile Computational Photography"** textbook.
+
+The code is organized in a modular structure that makes it easy to understand, extend, and maintain. Each component of the HDR pipeline is implemented as a separate, well-documented module.
+
+## ⚡ Quick Start
+
+**Important:** This project uses a virtual environment located one directory above the HDR folder. Before running any code:
+
+```bash
+# Activate virtual environment (from HDR directory)
+cd ..
+source virtual_ven/bin/activate  # On macOS/Linux
+cd HDR
+
+# Run the code
+python hdr_example.py
+```
+
+See [Usage Instructions](#usage-instructions) for detailed setup and usage information.
 
 ## Table of Contents
 
@@ -58,48 +76,110 @@ HDR addresses these limitations through a multi-step process:
 
 ## Implementation Architecture
 
-Our HDR implementation follows a modular architecture that mirrors the mobile computational photography pipeline:
+Our HDR implementation follows a **modular architecture** that makes the code easy to understand and extend. The implementation is based on Chapter 13 of "Mobile Computational Photography" and is organized into clear, separate modules:
 
 ```
+HDR Pipeline Flow:
+==================
+
 Input Image
     ↓
-Multi-Exposure Simulation
+Multi-Exposure Simulation (utils/image_utils.py)
     ↓
-Image Alignment (Feature Matching)
+Image Alignment (hdr/alignment.py)
     ↓
-Weight Computation
+Weight Computation (hdr/fusion.py)
     ↓
-HDR Fusion
+HDR Fusion (hdr/fusion.py)
     ↓
-Tone Mapping
+Tone Mapping (hdr/tone_mapping.py)
     ↓
 Final Output
 ```
 
-### Core Components
+### Project Structure
 
-#### 1. HDRProcessor Class
-The main processing engine that orchestrates the entire pipeline:
-
-```python
-class HDRProcessor:
-    def __init__(self):
-        self.aligned_images: List[np.ndarray] = []
-        self.exposure_times: List[float] = []
-        self.hdr_image: Optional[np.ndarray] = None
+```
+HDR/
+├── hdr/                    # Main HDR processing modules
+│   ├── __init__.py        # Package initialization
+│   ├── processor.py       # Main HDRProcessor orchestrator class
+│   ├── alignment.py       # Image alignment algorithms
+│   ├── fusion.py          # HDR fusion and weight computation
+│   └── tone_mapping.py    # Tone mapping algorithms (Reinhard, Drago)
+│
+├── utils/                  # Utility functions
+│   ├── __init__.py        # Package initialization
+│   ├── image_utils.py     # Image processing utilities
+│   └── visualization.py   # Visualization functions
+│
+├── hdr_example.py         # Main entry point and CLI
+├── run_hdr.py             # Advanced runner script
+├── run.sh                 # Bash runner script
+├── requirements.txt       # Python dependencies
+└── README.md              # This file
 ```
 
-#### 2. Multi-Exposure Capture Simulation
-Simulates the process of capturing multiple exposures by applying different exposure adjustments to a base image.
+### Core Components
 
-#### 3. Image Alignment Engine
-Uses computer vision techniques to align multiple exposures, compensating for camera shake and object movement.
+#### 1. **HDRProcessor** (`hdr/processor.py`)
+The main orchestrator class that coordinates all pipeline stages:
 
-#### 4. Fusion Algorithm
-Implements weighted averaging based on pixel value distributions to combine information from multiple exposures.
+```python
+from hdr import HDRProcessor
 
-#### 5. Tone Mapping System
-Converts high dynamic range data to displayable formats using proven algorithms.
+processor = HDRProcessor()
+results = processor.process_hdr_pipeline(image)
+```
+
+#### 2. **Image Alignment** (`hdr/alignment.py`)
+Feature-based image registration using ORB detectors and FLANN matching:
+
+```python
+from hdr.alignment import ImageAligner
+
+aligner = ImageAligner(n_features=1000, match_ratio=0.7)
+aligned_images = aligner.align_images(images, reference_idx=2)
+```
+
+#### 3. **HDR Fusion** (`hdr/fusion.py`)
+Weighted averaging fusion with triangle weighting function:
+
+```python
+from hdr.fusion import HDRFusion
+
+weights = HDRFusion.compute_weights(aligned_images)
+hdr_image = HDRFusion.fuse_hdr(aligned_images, exposure_times, weights)
+```
+
+#### 4. **Tone Mapping** (`hdr/tone_mapping.py`)
+Multiple tone mapping algorithms (Reinhard and Drago):
+
+```python
+from hdr.tone_mapping import ToneMapper
+
+tone_mapped = ToneMapper.apply_tone_mapping(hdr_image, method='reinhard')
+```
+
+#### 5. **Utilities** (`utils/`)
+Helper functions for image processing and visualization:
+
+```python
+from utils import simulate_multi_exposure_capture, visualize_results
+
+exposures, times = simulate_multi_exposure_capture(image)
+visualize_results(results)
+```
+
+### Why Modular Design?
+
+The modular structure provides several benefits:
+
+1. **Easier to Understand**: Each component has a single, clear responsibility
+2. **Easier to Test**: Individual modules can be tested in isolation
+3. **Easier to Extend**: New algorithms can be added without modifying existing code
+4. **Better Documentation**: Each module has focused documentation
+5. **Code Reusability**: Components can be used independently in other projects
 
 ---
 
@@ -196,13 +276,14 @@ def tone_map_reinhard(self, hdr_image: np.ndarray, key_value: float = 0.18):
 
 ## Code Example Walkthrough
 
-### Basic Usage
+### Basic Usage (Recommended)
 
-The simplest way to use our HDR implementation:
+The simplest way to use our HDR implementation with the modular API:
 
 ```python
 import cv2
-from hdr_example import HDRProcessor
+from hdr import HDRProcessor
+from utils import visualize_results
 
 # Load an image
 image = cv2.imread('sample.jpg')
@@ -210,12 +291,51 @@ image = cv2.imread('sample.jpg')
 # Create processor
 processor = HDRProcessor()
 
-# Process HDR pipeline
+# Process complete HDR pipeline
 results = processor.process_hdr_pipeline(image)
 
 # Access results
-hdr_image = results['hdr_image']
-tone_mapped = results['tone_mapped']
+hdr_image = results['hdr_image']          # HDR image (float32, 0-1 range)
+tone_mapped = results['tone_mapped']      # Final result (uint8, 0-255 range)
+
+# Visualize the results
+visualize_results(results)
+```
+
+### Using Individual Components
+
+You can also use individual components for more control:
+
+```python
+import cv2
+import numpy as np
+from hdr.alignment import ImageAligner
+from hdr.fusion import HDRFusion
+from hdr.tone_mapping import ToneMapper
+from utils.image_utils import simulate_multi_exposure_capture
+
+# Load image
+image = cv2.imread('sample.jpg')
+
+# Step 1: Simulate multiple exposures
+exposure_images, exposure_times = simulate_multi_exposure_capture(
+    image, 
+    exposure_ratios=[0.25, 0.5, 1.0, 2.0, 4.0]
+)
+
+# Step 2: Align images
+aligner = ImageAligner(n_features=1000)
+aligned_images = aligner.align_images(exposure_images, reference_idx=2)
+
+# Step 3: Compute weights and fuse
+weights = HDRFusion.compute_weights(aligned_images)
+hdr_image = HDRFusion.fuse_hdr(aligned_images, exposure_times, weights)
+
+# Step 4: Apply tone mapping
+tone_mapped = ToneMapper.apply_tone_mapping(hdr_image, method='reinhard')
+
+# Save result
+cv2.imwrite('result.jpg', tone_mapped)
 ```
 
 ### Advanced Configuration
@@ -268,24 +388,67 @@ git clone <repository-url>
 cd HDR
 ```
 
-2. **Install dependencies:**
+2. **Set up virtual environment (if not already set up):**
+
+The project uses a virtual environment located one directory above the HDR folder. The directory structure should be:
+```
+Mobile_Computational_photograph/
+  ├── virtual_ven/          # Virtual environment (one directory above)
+  └── HDR/                  # This project directory
+      ├── hdr/
+      ├── utils/
+      ├── hdr_example.py
+      └── ...
+```
+
+**Activate the virtual environment:**
 ```bash
+# From the HDR directory, go up one level and activate
+cd ..
+source virtual_ven/bin/activate  # On macOS/Linux
+# OR
+source virtual_ven/Scripts/activate  # On Windows (Git Bash)
+
+# Return to HDR directory
+cd HDR
+```
+
+**Alternative: Activate from parent directory:**
+```bash
+# From parent directory (Mobile_Computational_photograph/)
+source virtual_ven/bin/activate  # On macOS/Linux
+cd HDR
+```
+
+3. **Install dependencies:**
+```bash
+# Make sure virtual environment is activated, then:
 pip install -r requirements.txt
 ```
 
 ### Running the Example
 
-1. **Basic execution:**
+**Important:** Always activate the virtual environment before running the code!
+
+1. **Activate virtual environment first:**
+```bash
+# From HDR directory
+cd ..
+source virtual_ven/bin/activate  # On macOS/Linux
+cd HDR
+```
+
+2. **Basic execution:**
 ```bash
 python hdr_example.py
 ```
 
-2. **With your own image:**
+3. **With your own image:**
 ```bash
 python hdr_example.py --input your_image.jpg --output results/
 ```
 
-3. **Custom configuration:**
+4. **Custom configuration:**
 ```bash
 python hdr_example.py \
     --input photo.jpg \
@@ -294,14 +457,39 @@ python hdr_example.py \
     --tone-mapping reinhard
 ```
 
+5. **Using the runner script:**
+```bash
+# Make sure virtual environment is activated
+./run.sh
+# OR
+python run_hdr.py
+```
+
+### Quick Start (One-liner)
+
+If you're already in the parent directory with the virtual environment activated:
+
+```bash
+source virtual_ven/bin/activate && cd HDR && python hdr_example.py
+```
+
 ### Output Files
 
 The implementation generates several output files:
 
 - `hdr_result.jpg`: Final tone-mapped HDR image
-- `hdr_image.exr`: Raw HDR data (OpenEXR format)
+- `hdr_image.exr` or `hdr_image.npy`: Raw HDR data
+  - If OpenEXR is available: saved as `.exr` format
+  - If OpenEXR is not available: saved as `.npy` (NumPy format) with full precision
+  - A normalized 16-bit PNG preview may also be generated for visualization
 - `hdr_visualization.png`: Pipeline visualization
 - `hdr_visualization_final.png`: Final results comparison
+
+**Note on HDR File Formats:**
+- OpenCV's Python package may not include OpenEXR support by default
+- If EXR format is unavailable, the code automatically falls back to NumPy `.npy` format
+- To load a `.npy` file: `hdr_image = np.load('hdr_image.npy')`
+- The `.npy` format preserves full precision and is always available
 
 ---
 
@@ -478,6 +666,9 @@ class ComputationalPhotographyPipeline:
 
 ## References
 
+### Primary Reference
+- **Chapter 13 of "Mobile Computational Photography"** - This implementation is based on the concepts and algorithms described in this textbook chapter on HDR imaging.
+
 ### Academic Papers
 1. **Reinhard, E., et al.** "Photographic tone reproduction for digital images." ACM Transactions on Graphics 21.3 (2002): 267-276.
 2. **Drago, F., et al.** "Adaptive logarithmic mapping for displaying high contrast scenes." Computer Graphics Forum 22.3 (2003): 419-426.
@@ -513,16 +704,23 @@ We welcome contributions to improve this HDR implementation:
 ### Development Setup
 
 ```bash
-# Install development dependencies
+# 1. Activate virtual environment (from HDR directory)
+cd ..
+source virtual_ven/bin/activate  # On macOS/Linux
+cd HDR
+
+# 2. Install development dependencies
 pip install -r requirements.txt
 pip install pytest jupyter
 
-# Run tests
+# 3. Run tests (if available)
 pytest tests/
 
-# Interactive development
+# 4. Interactive development
 jupyter notebook
 ```
+
+**Note:** Always ensure the virtual environment is activated before running any Python commands or scripts.
 
 ---
 
@@ -540,4 +738,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-*This implementation demonstrates the practical application of mobile computational photography principles, providing a solid foundation for understanding and implementing HDR technology in real-world applications.*
+## Code Organization Philosophy
+
+This implementation is designed to be:
+
+- **Educational**: Clear code structure that follows Chapter 13 concepts
+- **Modular**: Each component is independent and reusable
+- **Well-Documented**: Comprehensive docstrings and comments
+- **Easy to Understand**: Code mirrors the theoretical concepts
+- **Extensible**: Easy to add new algorithms or modify existing ones
+
+Each module focuses on a single responsibility, making it easy for readers to:
+1. Understand how each component works in isolation
+2. See how components interact in the complete pipeline
+3. Modify or extend individual components without affecting others
+4. Learn the concepts from Chapter 13 through working code
+
+---
+
+*This implementation demonstrates the practical application of Chapter 13 concepts from "Mobile Computational Photography", providing a solid foundation for understanding and implementing HDR technology in real-world applications.*

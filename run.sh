@@ -3,6 +3,13 @@
 # HDR Processing Runner Script
 # ============================
 # Simple bash script to run HDR processing with different options
+#
+# IMPORTANT: Make sure to activate the virtual environment first!
+# The virtual environment should be located one directory above:
+#   cd ..
+#   source virtual_ven/bin/activate  # On macOS/Linux
+#   cd HDR
+#   ./run.sh
 
 echo "🎯 HDR Processing Runner"
 echo "========================="
