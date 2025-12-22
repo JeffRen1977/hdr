@@ -153,3 +153,4 @@ class HDRProcessor:
             'hdr_image': self.hdr_image,
             'tone_mapped': self.tone_mapped
         }
+

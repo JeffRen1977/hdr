@@ -132,3 +132,4 @@ class HDRFusion:
         
         print("   HDR fusion completed")
         return hdr
+

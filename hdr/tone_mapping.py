@@ -149,3 +149,4 @@ class ToneMapper:
                 hdr_image, 
                 key_value=kwargs.get('key_value', 0.18)
             )
+

@@ -28,3 +28,4 @@ from hdr.processor import HDRProcessor
 
 __all__ = ['HDRProcessor']
 __version__ = '1.0.0'
+
