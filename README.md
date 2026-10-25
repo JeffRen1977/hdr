@@ -11,7 +11,7 @@ The code is organized in a modular structure that makes it easy to understand, e
 ```bash
 # Activate virtual environment (from HDR directory)
 cd ..
-source virtual_ven/bin/activate  # On macOS/Linux
+source virtual_env/bin/activate  # On macOS/Linux
 cd HDR
 
 # Run the code
@@ -393,7 +393,7 @@ cd HDR
 The project uses a virtual environment located one directory above the HDR folder. The directory structure should be:
 ```
 Mobile_Computational_photograph/
-  ├── virtual_ven/          # Virtual environment (one directory above)
+  ├── virtual_env/          # Virtual environment (one directory above)
   └── HDR/                  # This project directory
       ├── hdr/
       ├── utils/
@@ -405,9 +405,9 @@ Mobile_Computational_photograph/
 ```bash
 # From the HDR directory, go up one level and activate
 cd ..
-source virtual_ven/bin/activate  # On macOS/Linux
+source virtual_env/bin/activate  # On macOS/Linux
 # OR
-source virtual_ven/Scripts/activate  # On Windows (Git Bash)
+source virtual_env/Scripts/activate  # On Windows (Git Bash)
 
 # Return to HDR directory
 cd HDR
@@ -416,7 +416,7 @@ cd HDR
 **Alternative: Activate from parent directory:**
 ```bash
 # From parent directory (Mobile_Computational_photograph/)
-source virtual_ven/bin/activate  # On macOS/Linux
+source virtual_env/bin/activate  # On macOS/Linux
 cd HDR
 ```
 
@@ -434,7 +434,7 @@ pip install -r requirements.txt
 ```bash
 # From HDR directory
 cd ..
-source virtual_ven/bin/activate  # On macOS/Linux
+source virtual_env/bin/activate  # On macOS/Linux
 cd HDR
 ```
 
@@ -470,7 +470,7 @@ python run_hdr.py
 If you're already in the parent directory with the virtual environment activated:
 
 ```bash
-source virtual_ven/bin/activate && cd HDR && python hdr_example.py
+source virtual_env/bin/activate && cd HDR && python hdr_example.py
 ```
 
 ### Output Files
@@ -706,7 +706,7 @@ We welcome contributions to improve this HDR implementation:
 ```bash
 # 1. Activate virtual environment (from HDR directory)
 cd ..
-source virtual_ven/bin/activate  # On macOS/Linux
+source virtual_env/bin/activate  # On macOS/Linux
 cd HDR
 
 # 2. Install development dependencies
