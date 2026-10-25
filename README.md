@@ -6,13 +6,11 @@ The code is organized in a modular structure that makes it easy to understand, e
 
 ## ⚡ Quick Start
 
-**Important:** This project uses a virtual environment located one directory above the HDR folder. Before running any code:
+**Important:** This project uses a shared virtual environment located in the parent folder. Before running any code:
 
 ```bash
 # Activate virtual environment (from HDR directory)
-cd ..
-source virtual_env/bin/activate  # On macOS/Linux
-cd HDR
+source ../virtual_env/bin/activate  # On macOS/Linux
 
 # Run the code
 python hdr_example.py
@@ -403,21 +401,10 @@ Mobile_Computational_photograph/
 
 **Activate the virtual environment:**
 ```bash
-# From the HDR directory, go up one level and activate
-cd ..
-source virtual_env/bin/activate  # On macOS/Linux
+# From the HDR directory
+source ../virtual_env/bin/activate  # On macOS/Linux
 # OR
-source virtual_env/Scripts/activate  # On Windows (Git Bash)
-
-# Return to HDR directory
-cd HDR
-```
-
-**Alternative: Activate from parent directory:**
-```bash
-# From parent directory (Mobile_Computational_photograph/)
-source virtual_env/bin/activate  # On macOS/Linux
-cd HDR
+source ../virtual_env/Scripts/activate  # On Windows (Git Bash)
 ```
 
 3. **Install dependencies:**
@@ -432,10 +419,7 @@ pip install -r requirements.txt
 
 1. **Activate virtual environment first:**
 ```bash
-# From HDR directory
-cd ..
-source virtual_env/bin/activate  # On macOS/Linux
-cd HDR
+source ../virtual_env/bin/activate  # On macOS/Linux
 ```
 
 2. **Basic execution:**
@@ -467,10 +451,10 @@ python run_hdr.py
 
 ### Quick Start (One-liner)
 
-If you're already in the parent directory with the virtual environment activated:
+Or as a one-liner:
 
 ```bash
-source virtual_env/bin/activate && cd HDR && python hdr_example.py
+source ../virtual_env/bin/activate && python hdr_example.py
 ```
 
 ### Output Files
@@ -705,9 +689,7 @@ We welcome contributions to improve this HDR implementation:
 
 ```bash
 # 1. Activate virtual environment (from HDR directory)
-cd ..
-source virtual_env/bin/activate  # On macOS/Linux
-cd HDR
+source ../virtual_env/bin/activate  # On macOS/Linux
 
 # 2. Install development dependencies
 pip install -r requirements.txt
