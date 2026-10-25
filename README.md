@@ -12,8 +12,14 @@ The code is organized in a modular structure that makes it easy to understand, e
 # Activate virtual environment (from HDR directory)
 source ../virtual_env/bin/activate  # On macOS/Linux
 
-# Run the code
-python hdr_example.py
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the demo
+python3 hdr_example.py
+
+# Run unit tests
+python3 -m pytest tests/ -v
 ```
 
 See [Usage Instructions](#usage-instructions) for detailed setup and usage information.
